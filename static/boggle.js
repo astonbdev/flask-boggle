@@ -13,9 +13,7 @@ let gameId;
 
 async function start() {
   let response = await axios.post("/api/new-game");
-  console.log(response.data);
-  gameId = response.data[1];
-  console.log(gameId);
+  gameId = response.data.game_id;
   let board = response.data.board;
 
   displayBoard(board);
