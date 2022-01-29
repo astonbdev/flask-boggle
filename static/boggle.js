@@ -44,15 +44,27 @@ function displayBoard(board) {
 
 async function submitWord(e) {
   e.preventDefault();
-
-  const json = JSON.stringify({ "gameId": gameId , "word": $("#wordInput").val().toUpperCase() });
-  console.log(JSON.stringify({"gameId" : gameId}));
-  console.log(gameId)
+  const $word = $("#wordInput").val().toUpperCase() 
+  const json = JSON.stringify({ "game_id": gameId ,  "word": $word });
   console.log(json);
 
-  let response = await axios.post("/api/score-word", json);
+  let response = await axios.post("/api/score-word", json, {headers: {
+    // Overwrite Axios's automatically set Content-Type
+    'Content-Type': 'application/json'
+  }});
 
   console.log(response.data);
+  const msg   = response.data.result;
+  if(msg == "not-word"){
+    $message.text(msg);
+  }
+  else if(msg == "not-on-board"){
+    $message.text(msg);
+  }
+  else{
+    $message.text(msg);
+    $playedWords.append($word);
+  }
 }
 
 $form.on("submit", submitWord);
