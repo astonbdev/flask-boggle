@@ -34,8 +34,9 @@ def new_game():
 @app.post("/api/score-word")
 def score_word():
     """Check if word is properly a word and if it's on board"""
-    
+
     data = request.get_json()
+    breakpoint()
     game_id = data["game_id"]
     word = data["word"].upper()
     is_word = games[game_id].is_word_in_word_list(word)
@@ -48,4 +49,4 @@ def score_word():
     else:
         return jsonify(result = "ok")
 
-    
+
