@@ -1,5 +1,6 @@
 from unittest import TestCase
 from app import app, games
+from flask import json
 
 # Make Flask errors be real errors, not HTML pages with error info
 app.config['TESTING'] = True
@@ -40,3 +41,29 @@ class BoggleAppTestCase(TestCase):
             self.assertIsInstance(data["game_id"], str)
             self.assertIsInstance(data["board"], list)
             # write a test for this route
+
+    def test_score_word(self):
+        """Test the case of not a word, not on board, or OK"""
+
+        with self.client as client:
+            game_id = client.post('/api/new-game').get_json()["game_id"]
+            game = games[game_id]
+            count = 0
+            while(count < 5):
+                game.board[count] = ["C","A","T","X","X"]
+                count += 1
+            response = client.post(
+                '/api/score-word',
+                json = {"game_id": game_id, "word": "CAT"})
+            self.assertEqual(response.get_json(), {"result" : "ok"})
+                
+            response = client.post(
+                '/api/score-word',
+                json = {"game_id": game_id, "word": "DOG"})    
+            self.assertEqual(response.get_json(), {"result": "not-on-board"})
+
+            response = client.post(
+                '/api/score-word',
+                json = {"game_id": game_id, "word": "XYZ"})
+            self.assertEqual(response.get_json(), {"result" : "not-word"})
+
